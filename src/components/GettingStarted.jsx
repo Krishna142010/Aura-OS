@@ -1,10 +1,10 @@
-import novaLogo from "../icons/nova-logo.svg";
+import auraLogo from "../icons/aura-logo.svg";
 import calculatorIcon from "../icons/calculator.svg";
 import folderIcon from "../icons/folder.svg";
 import gameIcon from "../icons/game.svg";
 import notesIcon from "../icons/notes.svg";
-import novaAIIcon from "../icons/nova-ai.svg";
-import musicIcon from "../icons/novamusic.svg";
+import auraAIIcon from "../icons/aura-ai.svg";
+import musicIcon from "../icons/auramusic.svg";
 import rocketIcon from "../icons/rocket.svg";
 import settingsIcon from "../icons/settings.svg";
 import systemIcon from "../icons/system.svg";
@@ -17,13 +17,13 @@ function GettingStarted({ onContinue }) {
         <div className="welcome-left">
           <div className="welcome-logo">
             <img
-              src={novaLogo}
-              alt="NovaOS"
+              src={auraLogo}
+              alt="AuraOS"
               className="welcome-logo-img"
             />
           </div>
 
-          <h1>NovaOS</h1>
+          <h1>AuraOS</h1>
 
           <p>
             Version 1.0.2 • Bridge Interface
@@ -39,8 +39,8 @@ function GettingStarted({ onContinue }) {
           <h2>Bridge Online</h2>
 
           <p>
-            Welcome aboard, Captain.
-            NovaOS has completed startup diagnostics and all core systems are operational.
+            Welcome aboard, Buddy.
+            AuraOS has completed startup diagnostics and all core systems are operational.
             Your desktop is now equipped with AI assistance, media controls,
             system utilities, navigation tools and interactive desktop modules.
           </p>
@@ -48,13 +48,13 @@ function GettingStarted({ onContinue }) {
           <div className="welcome-features">
 
   <div className="feature-item">
-    <img src={novaAIIcon} alt="" />
-    <span>Nova AI</span>
+    <img src={auraAIIcon} alt="" />
+    <span>Aura AI</span>
   </div>
 
   <div className="feature-item">
     <img src={rocketIcon} alt="" />
-    <span>Nova Command</span>
+    <span>Aura Command</span>
   </div>
 
   <div className="feature-item">
@@ -64,7 +64,7 @@ function GettingStarted({ onContinue }) {
 
   <div className="feature-item">
     <img src={musicIcon} alt="" />
-    <span>Nova Music</span>
+    <span>Aura Music</span>
   </div>
 
   <div className="feature-item">
@@ -104,7 +104,7 @@ function GettingStarted({ onContinue }) {
             className="welcome-btn"
             onClick={onContinue}
           >
-            ENTER NOVA-OS
+            ENTER AURA-OS
           </button>
 
         </div>

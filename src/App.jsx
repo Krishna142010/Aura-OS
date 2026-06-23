@@ -16,25 +16,25 @@ import StartMenu from "./components/StartMenu";
 import VideoBackground from "./components/VideoBackground";
 import BootScreen from "./components/BootScreen";
 import rocketIcon from "./icons/rocket.svg";
-import NovaCommand from "./apps/NovaCommand";
+import auraCommand from "./apps/auraCommand";
 import Notes from "./apps/Notes";
 import Explorer from "./apps/Explorer";
 import Calculator from "./apps/Calculator";
-import NovaAI from "./apps/NovaAI";
-import novaAIIcon from "./icons/nova-ai.svg";
+import auraAI from "./apps/auraAI";
+import auraAIIcon from "./icons/aura-ai.svg";
 import notesIcon from "./icons/notes.svg";
 import folderIcon from "./icons/folder.svg";
 import calculatorIcon from "./icons/calculator.svg";
 import OrbitalWidget from "./components/OrbitalWidget";
-import NovaHub from "./components/NovaHub2";
+import AuraHub from "./components/AuraHub2";
 import Settings from "./apps/Settings";
-import novaLogo from "./icons/nova-logo.svg";
+import auraLogo from "./icons/aura-logo.svg";
 import EmergencyScreen from "./components/EmergencyScreen";
 import settingsIcon from "./icons/settings.svg";
 import Toast from "./components/Toast";
 import notificationSound from "./assets/audio/notification.mp3";
-import NovaMusic from "./apps/NovaMusic";
-import musicIcon from "./icons/novamusic.svg";
+import AuraMusic from "./apps/AuraMusic";
+import musicIcon from "./icons/auramusic.svg";
 import ShipStatus from "./components/ShipStatus";
 import CursorShip from "./components/CursorShip";
 import AlienPet from "./components/AlienPet";
@@ -57,8 +57,8 @@ function App() {
   const [notesMinimized, setNotesMinimized] = useState(false);
   const [explorerMinimized, setExplorerMinimized] = useState(false);
   const [calcMinimized, setCalcMinimized] = useState(false);
-  const [novaOpen, setNovaOpen] = useState(false);
-  const [novaMinimized, setNovaMinimized] = useState(false);
+  const [auraOpen, setAuraOpen] = useState(false);
+  const [auraMinimized, setAuraMinimized] = useState(false);
   const [musicOpen, setMusicOpen] = useState(false);
   const [musicMinimized, setMusicMinimized] = useState(false);
   const [stellarOpen, setStellarOpen] = useState(false);
@@ -122,15 +122,15 @@ function App() {
     setSettingsMinimized(false);
   }, []);
 
-  const handleOpenNovaAI = useCallback(() => {
-    setNovaOpen(true);
-    setNovaMinimized(false);
+  const handleOpenAuraAI = useCallback(() => {
+    setAuraOpen(true);
+    setAuraMinimized(false);
   }, []);
 
   const handleSystemInfo = useCallback(() => {
     const ua = (typeof navigator !== "undefined" && navigator.userAgent) || "";
     const tail = ua ? ua.split(" ").pop() : "unknown";
-    showToast("System Info", `NovaOS · ${tail}`);
+    showToast("System Info", `AuraOS · ${tail}`);
   }, [showToast]);
 
   const handleRestart = useCallback(() => {
@@ -144,7 +144,7 @@ function App() {
       { label: "New Folder", action: handleNewFolder },
       { label: "New Note", action: handleNewNote },
       { label: "Change Wallpaper", action: handleChangeWallpaper },
-      { label: "Open Nova AI", action: handleOpenNovaAI },
+      { label: "Open Aura AI", action: handleOpenAuraAI },
       {
         label: "Settings",
         action: () => {
@@ -153,37 +153,37 @@ function App() {
         },
       },
       { label: "System Info", action: handleSystemInfo },
-      { label: "Restart NovaOS", action: handleRestart },
+      { label: "Restart AuraOS", action: handleRestart },
     ],
     [
       handleRefresh,
       handleNewFolder,
       handleNewNote,
       handleChangeWallpaper,
-      handleOpenNovaAI,
+      handleOpenAuraAI,
       handleSystemInfo,
       handleRestart,
     ]
   );
 
   const [wallpaper, setWallpaper] = useState(() => {
-    return localStorage.getItem("nova-wallpaper") || "default";
+    return localStorage.getItem("aura-wallpaper") || "default";
   });
 
   const [showWelcome, setShowWelcome] = useState(() => {
-    return localStorage.getItem("nova-onboarding-complete") !== "true";
+    return localStorage.getItem("aura-onboarding-complete") !== "true";
   });
 
   const [startOpen] = useState(false);
 
   const [pinnedApps] = useState(() => {
-    const savedPins = localStorage.getItem("novaPins");
+    const savedPins = localStorage.getItem("auraPins");
     return savedPins
       ? JSON.parse(savedPins)
       : [
           { name: "Explorer", icon: folderIcon },
-          { name: "Nova AI", icon: novaAIIcon },
-          { name: "Nova Command", icon: rocketIcon },
+          { name: "Aura AI", icon: AuraAIIcon },
+          { name: "Aura Command", icon: rocketIcon },
         ];
   });
 
@@ -203,15 +203,15 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const seen = localStorage.getItem("nova-welcome-shown");
+    const seen = localStorage.getItem("aura-welcome-shown");
     if (!seen) {
       setTimeout(() => {
         showToast(
-          "Welcome to NovaOS",
+          "Welcome to AuraOS",
           "Open Settings to customize wallpapers and system preferences."
         );
       }, 1500);
-      localStorage.setItem("nova-welcome-shown", "true");
+      localStorage.setItem("aura-welcome-shown", "true");
     }
   }, [showToast]);
 
@@ -296,17 +296,17 @@ function App() {
     ...(calcOpen && !pinnedApps.some((app) => app.name === "Calculator")
       ? [{ name: "Calculator", icon: calculatorIcon }]
       : []),
-    ...(novaOpen && !pinnedApps.some((app) => app.name === "Nova AI")
-      ? [{ name: "Nova AI", icon: novaAIIcon }]
+    ...(auraOpen && !pinnedApps.some((app) => app.name === "Aura AI")
+      ? [{ name: "Aura AI", icon: auraAIIcon }]
       : []),
-    ...(commandOpen && !pinnedApps.some((app) => app.name === "Nova Command")
-      ? [{ name: "Nova Command", icon: rocketIcon }]
+    ...(commandOpen && !pinnedApps.some((app) => app.name === "Aura Command")
+      ? [{ name: "Aura Command", icon: rocketIcon }]
       : []),
     ...(settingsOpen && !pinnedApps.some((app) => app.name === "Settings")
       ? [{ name: "Settings", icon: settingsIcon }]
       : []),
-    ...(musicOpen && !pinnedApps.some((app) => app.name === "Nova Music")
-      ? [{ name: "Nova Music", icon: musicIcon }]
+    ...(musicOpen && !pinnedApps.some((app) => app.name === "Aura Music")
+      ? [{ name: "Aura Music", icon: musicIcon }]
       : []),
     ...(stellarOpen &&
 !pinnedApps.some((app) => app.name === "Stellar Navigation")
@@ -321,8 +321,8 @@ function App() {
   if (shutdown) {
     return (
       <div className="shutdown-screen">
-        <img src={novaLogo} alt="" width="120" />
-        <h1>NovaOS</h1>
+        <img src={auraLogo} alt="" width="120" />
+        <h1>AuraOS</h1>
         <p>System Powered Off</p>
       </div>
     );
@@ -361,9 +361,9 @@ function App() {
       {showWelcome && (
         <GettingStarted
           onContinue={() => {
-            localStorage.setItem("nova-onboarding-complete", "true");
+            localStorage.setItem("aura-onboarding-complete", "true");
             setShowWelcome(false);
-            showToast("Bridge Online", "Welcome to NovaOS.");
+            showToast("Bridge Online", "Welcome to AuraOS.");
           }}
         />
       )}
@@ -389,13 +389,13 @@ function App() {
       />
 
       <DesktopIcon
-        icon={<img src={novaAIIcon} alt="" width="40" />}
-        label="Nova AI"
+        icon={<img src={auraAIIcon} alt="" width="40" />}
+        label="Aura AI"
         top="330px"
         left="30px"
         onDoubleClick={() => {
-          setNovaOpen(true);
-          setNovaMinimized(false);
+          setAuraOpen(true);
+          setAuraMinimized(false);
         }}
       />
 
@@ -423,7 +423,7 @@ function App() {
 
       <DesktopIcon
         icon={<img src={rocketIcon} alt="" width="40" />}
-        label="Nova Command"
+        label="Aura Command"
         top="430px"
         left="30px"
         onDoubleClick={() => {
@@ -445,7 +445,7 @@ function App() {
 
       <DesktopIcon
         icon={<img src={musicIcon} alt="" width="40" />}
-        label="Nova Music"
+        label="Aura Music"
         top="630px"
         left="30px"
         onDoubleClick={() => {
@@ -534,7 +534,7 @@ function App() {
 
       {commandOpen && !commandMinimized && (
         <Window
-          title="NOVA COMMAND"
+          title="Aura COMMAND"
           top="60px"
           left="120px"
           width="1000px"
@@ -544,7 +544,7 @@ function App() {
           onClose={() => setCommandOpen(false)}
           onMinimize={() => setCommandMinimized(true)}
         >
-          <NovaCommand />
+          <AuraCommand />
         </Window>
       )}
 
@@ -583,11 +583,11 @@ function App() {
             setCalcMinimized(false);
             bringToFront("calc");
           }
-          if (app === "Nova AI") {
-            setNovaMinimized(false);
-            setNovaOpen(true);
+          if (app === "Aura AI") {
+            setAuraMinimized(false);
+            setAuraOpen(true);
           }
-          if (app === "Nova Command") {
+          if (app === "Aura Command") {
             setCommandMinimized(false);
             setCommandOpen(true);
             bringToFront("command");
@@ -596,7 +596,7 @@ function App() {
             setSettingsMinimized(false);
             setSettingsOpen(true);
           }
-          if (app === "Nova Music") {
+          if (app === "Aura Music") {
             setMusicMinimized(false);
             setMusicOpen(true);
           }
@@ -608,24 +608,24 @@ function App() {
         }}
       />
 
-      {novaOpen && !novaMinimized && (
+      {auraOpen && !auraMinimized && (
         <Window
-          title="Nova AI"
+          title="Aura AI"
           top="120px"
           left="250px"
           width="700px"
           height="500px"
           zIndex={30}
-          onClose={() => setNovaOpen(false)}
-          onMinimize={() => setNovaMinimized(true)}
+          onClose={() => setAuraOpen(false)}
+          onMinimize={() => setAuraMinimized(true)}
         >
-          <NovaAI />
+          <AuraAI />
         </Window>
       )}
 
       {musicOpen && !musicMinimized && (
         <Window
-          title="Nova Music"
+          title="Aura Music"
           top="100px"
           left="300px"
           width="700px"
@@ -634,12 +634,12 @@ function App() {
           onClose={() => setMusicOpen(false)}
           onMinimize={() => setMusicMinimized(true)}
         >
-          <NovaMusic />
+          <AuraMusic />
         </Window>
       )}
 
       {hubOpen && (
-        <NovaHub
+        <AuraHub
           onClose={() => setHubOpen(false)}
           openSettings={() => {
             setSettingsOpen(true);
@@ -661,12 +661,12 @@ function App() {
             setCalcMinimized(false);
             setHubOpen(false);
           }}
-          openNovaAI={() => {
-            setNovaOpen(true);
-            setNovaMinimized(false);
+          openAuraAI={() => {
+            setAuraOpen(true);
+            setAuraMinimized(false);
             setHubOpen(false);
           }}
-          openNovaCommand={() => {
+          openAuraCommand={() => {
             setCommandOpen(true);
             setCommandMinimized(false);
             setHubOpen(false);
@@ -681,7 +681,7 @@ function App() {
             setEmergencyMode(true);
             setHubOpen(false);
           }}
-          openNovaMusic={() => {
+          openAuraMusic={() => {
             setMusicOpen(true);
             setMusicMinimized(false);
             setHubOpen(false);
@@ -693,7 +693,7 @@ function App() {
 
       <AlienPet
         musicOpen={musicOpen}
-        novaOpen={novaOpen}
+        auraOpen={auraOpen}
         explorerOpen={explorerOpen}
         settingsOpen={settingsOpen}
       />

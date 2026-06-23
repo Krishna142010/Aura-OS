@@ -10,7 +10,7 @@ function StartMenu({
   return (
     <div className="start-menu">
 
-      <h2>NovaOS</h2>
+      <h2>AuraOS</h2>
 
       <div
         className="menu-item"

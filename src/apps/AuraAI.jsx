@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-function NovaAI() {
+function AuraAI() {
   const [messages, setMessages] = useState([
     {
       sender: "ai",
-      text: "Hello Commander. Nova AI online.",
+      text: "Hello Commander. Aura AI online.",
     },
   ]);
 
@@ -12,7 +12,7 @@ function NovaAI() {
 
   const replies = [
     "Navigation systems online.",
-    "All NovaOS systems operational.",
+    "All AuraOS systems operational.",
     "Scanning nearby sectors...",
     "Mission status: Stable.",
     "Awaiting further instructions, Commander.",
@@ -37,9 +37,9 @@ function NovaAI() {
   };
 
   return (
-    <div className="nova-ai">
+    <div className="aura-ai">
 
-      <div className="nova-chat">
+      <div className="aura-chat">
 
         {messages.map((msg, i) => (
           <div
@@ -52,14 +52,14 @@ function NovaAI() {
 
       </div>
 
-      <div className="nova-input-bar">
+      <div className="aura-input-bar">
 
         <input
           value={input}
           onChange={(e) =>
             setInput(e.target.value)
           }
-          placeholder="Ask Nova AI..."
+          placeholder="Ask Aura AI..."
         />
 
         <button
@@ -74,4 +74,4 @@ function NovaAI() {
   );
 }
 
-export default NovaAI;
+export default AuraAI;

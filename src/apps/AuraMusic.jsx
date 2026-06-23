@@ -11,25 +11,25 @@ import cover3 from "../assets/cover/song3.webp";
 const playlist = [
   {
     title: "Track 01",
-    artist: "Nova Music",
+    artist: "Aura Music",
     file: song1,
     cover: cover1,
   },
   {
     title: "Track 02",
-    artist: "Nova Music",
+    artist: "Aura Music",
     file: song2,
     cover: cover2,
   },
   {
     title: "Track 03",
-    artist: "Nova Music",
+    artist: "Aura Music",
     file: song3,
     cover: cover3,
   },
 ];
 
-function NovaMusic() {
+function AuraMusic() {
   const audioRef = useRef(null);
 
   const [currentTrack, setCurrentTrack] =
@@ -112,7 +112,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="nova-music">
+    <div className="aura-music">
 
       <audio
         ref={audioRef}
@@ -235,4 +235,4 @@ useEffect(() => {
   );
 }
 
-export default NovaMusic;
+export default AuraMusic;

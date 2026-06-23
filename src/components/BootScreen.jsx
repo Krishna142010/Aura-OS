@@ -84,7 +84,7 @@ const STATUS_MSGS = [
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function NovaOS() {
+export default function AuraOS() {
   const [progress, setProgress] = useState(0); // 0 → 1
   const [statusIdx, setStatusIdx] = useState(0);
   const [done, setDone] = useState(false);
@@ -274,7 +274,7 @@ export default function NovaOS() {
             />
           )}
 
-          {/* ── NOVA OS Logo (always on top of far-side planet) ── */}
+          {/* ── AURA OS Logo (always on top of far-side planet) ── */}
           <g filter="url(#logoGlow)">
             {/* Outer halo */}
             <text
@@ -287,7 +287,7 @@ export default function NovaOS() {
               letterSpacing="18"
               style={{ userSelect: "none", fontFamily: "'SF Pro Display','Inter',system-ui,sans-serif" }}
             >
-              NOVA OS
+              AURA OS
             </text>
             {/* Main text */}
             <text
@@ -300,7 +300,7 @@ export default function NovaOS() {
               letterSpacing="18"
               style={{ userSelect: "none", fontFamily: "'SF Pro Display','Inter',system-ui,sans-serif" }}
             >
-              NOVA OS
+              AURA OS
             </text>
             {/* Subtle inner highlight */}
             <text
@@ -314,7 +314,7 @@ export default function NovaOS() {
               opacity={0.35}
               style={{ userSelect: "none", fontFamily: "'SF Pro Display','Inter',system-ui,sans-serif" }}
             >
-              NOVA OS
+              AURA OS
             </text>
           </g>
 
@@ -378,7 +378,7 @@ export default function NovaOS() {
         fontWeight: 400,
         pointerEvents: "none",
       }}>
-        NOVA OS v4.1.0 · DEEP SPACE EDITION
+        AURA OS v4.1.0 · DEEP SPACE EDITION
       </div>
 
       {/* ── Done flash ── */}

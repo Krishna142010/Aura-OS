@@ -163,7 +163,7 @@ ctx.fill();
         <span style={styles.dot} />
         <div>
   <div style={styles.title}>
-    NOVA SCANNER
+    AURA SCANNER
   </div>
 
   <div

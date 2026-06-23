@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 
 /* ============================================================
-   AlienPet — NovaOS Crew Companion
+   AlienPet — AuraOS Crew Companion
    A premium desktop pet: cursor-tracking eyes, patrol walks,
    speech bubbles, app reactions, moods, idle sleep, XP/level,
    loot discoveries, and petting interactions.
@@ -41,10 +41,10 @@ const RANDOM_LOOT = [
 ];
 
 const APP_REACTIONS = {
-  novaOpen: [
-    "Ooh, talking to Nova AI?",
+  auraOpen: [
+    "Ooh, talking to Aura AI?",
     "AI core online, sir.",
-    "Nova's chatty today.",
+    "Aura's chatty today.",
   ],
   explorerOpen: [
     "Rummaging through files?",
@@ -82,8 +82,9 @@ const getViewportHeight = () =>
   typeof window !== "undefined" ? window.innerHeight : 1080;
 
 export default function AlienPet({
+  auraOpen,
   musicOpen,
-  novaOpen,
+  auraOpen,
   explorerOpen,
   settingsOpen,
 }) {
@@ -117,7 +118,7 @@ export default function AlienPet({
   const petRef = useRef(null);
   const prevLevelRef = useRef(level);
   const prevAppsRef = useRef({
-    novaOpen: false,
+    auraaOpen: false,
     explorerOpen: false,
     musicOpen: false,
     settingsOpen: false,
@@ -145,7 +146,7 @@ export default function AlienPet({
   useEffect(() => {
     const prev = prevAppsRef.current;
     let triggered = null;
-    if (novaOpen && !prev.novaOpen) triggered = "novaOpen";
+    if (auraOpen && !prev.auraOpen) triggered = "auraOpen";
     else if (explorerOpen && !prev.explorerOpen) triggered = "explorerOpen";
     else if (musicOpen && !prev.musicOpen) triggered = "musicOpen";
     else if (settingsOpen && !prev.settingsOpen) triggered = "settingsOpen";
@@ -156,8 +157,8 @@ export default function AlienPet({
       showMessage(msg);
       setMood("curious");
     }
-    prevAppsRef.current = { novaOpen, explorerOpen, musicOpen, settingsOpen };
-  }, [novaOpen, explorerOpen, musicOpen, settingsOpen, sleeping, showMessage]);
+    prevAppsRef.current = { auraOpen, explorerOpen, musicOpen, settingsOpen };
+  }, [auraOpen, explorerOpen, musicOpen, settingsOpen, sleeping, showMessage]);
 
   /* -------- Mouse tracking + wake-on-move -------- */
   useEffect(() => {
@@ -262,7 +263,7 @@ export default function AlienPet({
     ? "angry"
     : musicOpen
     ? "excited"
-    : novaOpen || explorerOpen || settingsOpen
+    : auraOpen || explorerOpen || settingsOpen
     ? "curious"
     : mood;
 

@@ -79,7 +79,7 @@ useEffect(() => {
       </div>
 
       <div style={styles.row}>
-        <span>Nova AI</span>
+        <span>Aura AI</span>
         <span style={styles.online}>ONLINE</span>
       </div>
 

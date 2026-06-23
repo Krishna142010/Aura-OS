@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 /* ============================================================
-   Nova Command — spacecraft bridge / command console
+   Aura Command — spacecraft bridge / command console
    Self-contained. Scoped styles via <style>. No external deps.
    Design: matte graphite surfaces, single indigo accent,
    status color only for nominal / warning / critical.
@@ -32,7 +32,7 @@ const ts = () =>
 const level = (v, warn = 35, crit = 18) =>
   v <= crit ? "crit" : v <= warn ? "warn" : "ok";
 
-function NovaCommand() {
+function AuraCommand() {
   const [tab, setTab] = useState("Navigation");
 
   const [ship, setShip] = useState({
@@ -402,7 +402,7 @@ function NovaCommand() {
         <div className="nc-topnav">
           <div className="nc-brand">
             <span className="nc-brand-mark" />
-            NOVA COMMAND
+            Aura COMMAND
           </div>
           <div className="nc-tabs">
             {TABS.map((t) => (
@@ -1131,4 +1131,4 @@ const css = `
 .nc-col::-webkit-scrollbar-track, .nc-logbar-feed::-webkit-scrollbar-track{ background:transparent; }
 `;
 
-export default NovaCommand;
+export default AuraCommand;

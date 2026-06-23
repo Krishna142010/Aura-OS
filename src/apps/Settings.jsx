@@ -3,7 +3,7 @@ import appearanceIcon from "../icons/appearance.svg";
 import wallpaperIcon from "../icons/wallpaper.svg";
 import systemIcon from "../icons/system.svg";
 import infoIcon from "../icons/info.svg";
-import novaLogo from "../icons/nova-logo.svg";
+import auraLogo from "../icons/aura-logo.svg";
 const WALLPAPERS = [
   { key: "wallpaper1", label: "Wallpaper 1" },
   { key: "wallpaper2", label: "Wallpaper 2" },
@@ -30,7 +30,7 @@ const SECTIONS = [
   },
   {
     id: "about",
-    label: "About NovaOS",
+    label: "About AuraOS",
     icon: infoIcon,
   },
 ];
@@ -53,27 +53,27 @@ function Settings({ wallpaper, setWallpaper, showToast}) {
   setWallpaper(key);
 
   localStorage.setItem(
-    "nova-wallpaper",
+    "aura-wallpaper",
     key
   );
 
   showToast(
-    "NovaOS",
+    "AuraOS",
     "Wallpaper changed"
   );
 };
 
   return (
-    <div className="nova-settings">
+    <div className="aura-settings">
       <aside className="settings-sidebar">
         <div className="settings-brand">
           <span className="settings-brand-mark"><img
-  src={novaLogo}
-  alt="NovaOS"
+  src={auraLogo}
+  alt="AuraOS"
   className="settings-brand-logo"
 /></span>
           <div>
-            <div className="settings-brand-title">NovaOS</div>
+            <div className="settings-brand-title">AuraOS</div>
             <div className="settings-brand-sub">Control Center</div>
           </div>
         </div>
@@ -109,7 +109,7 @@ function Settings({ wallpaper, setWallpaper, showToast}) {
           <section className="settings-panel">
             <h2 className="panel-title">Appearance</h2>
             <p className="panel-sub">
-              Tune the look and feel of your NovaOS environment.
+              Tune the look and feel of your AuraOS environment.
             </p>
 
             <div className="setting-row">
@@ -219,7 +219,7 @@ function Settings({ wallpaper, setWallpaper, showToast}) {
 
             <div className="setting-row">
               <div>
-                <div className="setting-row-title">NovaOS Version</div>
+                <div className="setting-row-title">AuraOS Version</div>
                 <div className="setting-row-desc">Stable channel</div>
               </div>
               <span className="pill">1.0</span>
@@ -231,12 +231,12 @@ function Settings({ wallpaper, setWallpaper, showToast}) {
           <section className="settings-panel about-panel">
             <div className="about-logo"><div className="about-logo">
   <img
-    src={novaLogo}
-    alt="NovaOS"
+    src={auraLogo}
+    alt="AuraOS"
     className="about-logo-img"
   />
 </div></div>
-            <h1 className="about-title">NovaOS</h1>
+            <h1 className="about-title">AuraOS</h1>
             <p className="about-tagline">Experimental Desktop Environment</p>
 
             <div className="about-meta">

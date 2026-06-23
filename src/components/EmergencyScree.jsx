@@ -120,7 +120,7 @@ function EmergencyScreen({
           onClick={() => {
             if (
               code ===
-              "NOVA-77"
+              "AURA-77"
             ) {
               enterCommand();
             } else {

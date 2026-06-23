@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import "./StellarNavigation.css";
 
 /* ============================================================
-   StellarNavigation — NovaOS deep-space bridge simulator
+   StellarNavigation — AuraOS deep-space bridge simulator
    ------------------------------------------------------------
    Architecture:
      - StellarNavigation (root)         owns game state + loop
@@ -1664,7 +1664,7 @@ export default function StellarNavigation() {
           <div className="sn-start-logo">STELLAR NAVIGATION</div>
           <div className="sn-start-subtitle">Deep-Space Bridge Simulator</div>
           <div className="sn-start-description">
-            You are the Captain of the NovaOS exploratory vessel. Navigate deep
+            You are the Captain of the AuraOS exploratory vessel. Navigate deep
             space, scan anomalies, harvest resources, and reach distant
             checkpoints across uncharted sectors.
           </div>

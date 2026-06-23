@@ -161,7 +161,7 @@ function CelestialClock() {
           <div className="cc-label">SOLAR CYCLE</div>
           <div className="cc-time">{time}</div>
           <div className="cc-date">{date}</div>
-          <div className="cc-sector">NOVA SECTOR</div>
+          <div className="cc-sector"><AURA>_AURA </AURA>SECTOR</div>
         </div>
       </div>
     </>

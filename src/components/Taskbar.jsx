@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import novaLogo from "../icons/nova-logo.svg";
+import auraLogo from "../icons/aura-logo.svg";
 function Taskbar({
   setHubOpen,
   hubOpen,
@@ -30,8 +30,8 @@ function Taskbar({
     <div className="taskbar-center">
 
       <img
-        src={novaLogo}
-        alt="NovaOS"
+        src={auraLogo}
+        alt="AuraOS"
         className="taskbar-logo"
         onClick={toggleStart}
       />

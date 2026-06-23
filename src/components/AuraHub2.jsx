@@ -2,23 +2,23 @@ import { useState } from "react";
 
 import sleepIcon from "../icons/sleep.svg";
 import restartIcon from "../icons/restart.svg";
-import novaLogo from "../icons/nova-logo.svg";
+import auraLogo from "../icons/aura-logo.svg";
 import notesIcon from "../icons/notes.svg";
 import folderIcon from "../icons/folder.svg";
 import calculatorIcon from "../icons/calculator.svg";
-import novaAIIcon from "../icons/nova-ai.svg";
+import auraAIIcon from "../icons/aura-ai.svg";
 import rocketIcon from "../icons/rocket.svg";
 import settingsIcon from "../icons/settings.svg";
-import musicIcon from "../icons/novamusic.svg";
+import musicIcon from "../icons/auramusic.svg";
 
-function NovaHub({
+function AuraHub({
   onClose,
   openNotes,
   openExplorer,
   openCalculator,
-  openNovaAI,
-  openNovaCommand,
-  openNovaMusic,
+  openAuraAI,
+  openAuraCommand,
+  openAuraMusic,
   openSettings,
   onSleep,
   onRestart,
@@ -30,24 +30,24 @@ function NovaHub({
 
   return (
     <div
-      className="nova-hub-overlay"
+      className="aura-hub-overlay"
       onClick={onClose}
     >
       <div
-        className="nova-hub"
+        className="aura-hub"
         onClick={(e) =>
           e.stopPropagation()
         }
       >
         <div className="hub-header">
           <img
-            src={novaLogo}
-            alt="NovaOS"
+            src={auraLogo}
+            alt="AuraOS"
             className="hub-logo"
           />
 
           <div>
-            <h2>NovaOS</h2>
+            <h2>AuraOS</h2>
             <span>
               Bridge Interface
             </span>
@@ -64,7 +64,7 @@ function NovaHub({
           <div
             className="hub-app"
             onClick={() => {
-              openNovaCommand();
+              openAuraCommand();
               onClose();
             }}
           >
@@ -73,23 +73,23 @@ function NovaHub({
               alt=""
             />
             <span>
-              Nova Command
+              Aura Command
             </span>
           </div>
 
           <div
             className="hub-app"
             onClick={() => {
-              openNovaAI();
+              openAuraAI();
               onClose();
             }}
           >
             <img
-              src={novaAIIcon}
+              src={auraAIIcon}
               alt=""
             />
             <span>
-              Nova AI
+              Aura AI
             </span>
           </div>
 
@@ -160,7 +160,7 @@ function NovaHub({
           <div
             className="hub-app"
             onClick={() => {
-              openNovaMusic();
+              openAuraMusic();
               onClose();
             }}
           >
@@ -169,7 +169,7 @@ function NovaHub({
               alt=""
             />
             <span>
-              Nova Music
+              Aura Music
             </span>
           </div>
 
@@ -256,4 +256,4 @@ function NovaHub({
   );
 }
 
-export default NovaHub;
+export default AuraHub;

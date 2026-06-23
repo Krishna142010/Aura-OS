@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 function Notes() {
   const [notes, setNotes] = useState(() => {
     const saved =
-      localStorage.getItem("nova-notes-v2");
+      localStorage.getItem("aura-notes-v2");
 
     return saved
       ? JSON.parse(saved)
@@ -12,7 +12,7 @@ function Notes() {
             id: 1,
             title: "Welcome",
             content:
-              "Welcome to NovaOS Notes.",
+              "Welcome to AuraOS Notes.",
             updated: Date.now(),
           },
         ];
@@ -26,7 +26,7 @@ function Notes() {
 
   useEffect(() => {
     localStorage.setItem(
-      "nova-notes-v2",
+      "aura-notes-v2",
       JSON.stringify(notes)
     );
   }, [notes]);

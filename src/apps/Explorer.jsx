@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import "./Explorer.css";
 
 /* ============================================================
-   NovaOS Explorer — Real OS File Manager
+   AuraOS Explorer — Real OS File Manager
    ------------------------------------------------------------
    Architecture (modular sub-components):
      - Sidebar         (favorites + storage panel)
@@ -56,7 +56,7 @@ function buildInitialFS() {
   fs["images"] = makeNode("images", "Images", "folder", 0, null, []);
 
   // Desktop contents
-  const d1 = makeNode("d_novaos_lnk", "NovaOS.lnk", "shortcut", 2 * 1024, "desktop");
+  const d1 = makeNode("d_auraos_lnk", "AuraOS.lnk", "shortcut", 2 * 1024, "desktop");
   const d2 = makeNode("d_homework", "Homework.docx", "document", 24 * 1024, "desktop");
   fs[d1.id] = d1; fs[d2.id] = d2;
   fs["desktop"].children = [d1.id, d2.id];
@@ -75,16 +75,16 @@ function buildInitialFS() {
   fs["downloads"].children = [dl1.id, dl2.id];
 
   // Projects (folders)
-  const p1 = makeNode("p_novaos", "NovaOS", "folder", 0, "projects", []);
+  const p1 = makeNode("p_auraos", "AuraOS", "folder", 0, "projects", []);
   const p2 = makeNode("p_snapbooks", "SnapBooks", "folder", 0, "projects", []);
   fs[p1.id] = p1; fs[p2.id] = p2;
   fs["projects"].children = [p1.id, p2.id];
 
-  // NovaOS subfolder contents
-  const n1 = makeNode("n_source", "src", "folder", 0, "p_novaos", []);
-  const n2 = makeNode("n_pkg", "package.json", "document", 2 * 1024, "p_novaos");
+  // AuraOS subfolder contents
+  const n1 = makeNode("n_source", "src", "folder", 0, "p_auraos", []);
+  const n2 = makeNode("n_pkg", "package.json", "document", 2 * 1024, "p_auraos");
   fs[n1.id] = n1; fs[n2.id] = n2;
-  fs["p_novaos"].children = [n1.id, n2.id];
+  fs["p_auraos"].children = [n1.id, n2.id];
 
   // Images
   const i1 = makeNode("i_space", "space.jpg", "image", 2.8 * 1024 * 1024, "images");
@@ -148,7 +148,7 @@ const detectType = (name) => {
 };
 
 /* ============================================================
-   File Icon — proper NovaOS icons (SVG, no emoji)
+   File Icon — proper AuraOS icons (SVG, no emoji)
    ============================================================ */
 function FileIcon({ type, name, size = 40 }) {
   const s = size;
