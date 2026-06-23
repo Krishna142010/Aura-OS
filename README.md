@@ -1,15 +1,18 @@
-# Aura OS 
+# Aura OS
 > A resilient, AI-driven Operating System engineered for next-generation spacecraft.
 
 ## Overview
-Aura OS seamlessly integrates real-time mission control with an advanced onboard AI.
-Built for deep-space autonomy, it ensures absolute fault-tolerance across avionics and life support.
+Aura OS is a high-performance, browser-based desktop environment simulating deep-space mission control. It seamlessly integrates a persistent virtual file system, real-time telemetry, and an offline heuristic AI to ensure absolute fault-tolerance across avionics and life support.
 
-## Core Features
-* Onboard AI: Integrated intelligence for predictive diagnostics and autonomous decision-making.
-* Deterministic Execution: Low-latency microkernel for precise telemetry and orbital maneuvers.
-* Radiation Resilience: Triple-redundant failover mechanisms to protect against cosmic bit-flips.
+## Core Architecture
+* Stateful Virtual File System (VFS): An in-memory, persistent `localStorage` disk image allowing full CRUD operations across native applications like Explorer and Notes.
+* Local Heuristic AI: A fallback cognitive subsystem capable of executing system commands, parsing mathematical logic, and processing specialized queries without external API dependencies.
+* Deterministic Window Manager: A robust Z-index layering system featuring active focus tracking, boundary collision protection, and glassmorphic rendering.
+* Hardware-Accelerated Telemetry: Canvas-driven radar sweeps, real-time audio integration, and physics-based hyperdrive particle engines running on optimized `requestAnimationFrame` loops.
 
 ## Quick Start
-Compile the kernel using `make build-kernel` and test via `qemu-system-x86_64 -kernel aura.bin`.
-Check `CONTRIBUTING.md` to collaborate and help build the future of autonomous spaceflight!
+1. Clone the repository and install dependencies: `npm install`
+2. Initialize the local development server: `npm run dev`
+3. The bridge interface will mount at `http://localhost:5173`
+
+*Engineering the future of autonomous spaceflight.*
