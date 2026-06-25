@@ -10,49 +10,50 @@ import Window from "./components/Windows";
 import ShipStatus from "./components/ShipStatus";
 import OrbitalWidget from "./components/OrbitalWidget";
 import AlienPet from "./components/AlienPet";
-import EmergencyScreen from "./components/EmergencyScree"; // Note: adjusted to match your filename
-
-// --- Applications ---
-import Explorer from "./apps/Explorer";
-import Notes from "./apps/Notes";
-import Calculator from "./apps/Calculator";
-import AuraAI from "./apps/AuraAI";
-import AuraMusic from "./apps/AuraMusic";
+import GettingStarted from "./components/GettingStarted";
 import StellarNavigation from "./apps/StellarNavigation";
-import AuraCommand from "./apps/AuraCommand";
-import Settings from "./apps/Settings";
-
-// --- Hooks & Utils ---
-import { useSystemAudio } from "./hooks/useSystemAudio"; // Ensure you created this hook earlier
-
-// --- App Registry ---
-const APP_REGISTRY = {
-  explorer: { id: "explorer", name: "File Explorer", icon: "📁", component: Explorer, width: "800px", height: "550px" },
-  notes: { id: "notes", name: "Notes", icon: "📝", component: Notes, width: "700px", height: "600px" },
-  calc: { id: "calc", name: "Calculator", icon: "🔢", component: Calculator, width: "320px", height: "450px" },
-  ai: { id: "ai", name: "Aura AI", icon: "🧠", component: AuraAI, width: "400px", height: "600px" },
-  music: { id: "music", name: "Media Player", icon: "🎵", component: AuraMusic, width: "350px", height: "500px" },
-  nav: { id: "nav", name: "Stellar Nav", icon: "🚀", component: StellarNavigation, width: "1000px", height: "700px" },
-  cmd: { id: "cmd", name: "Aura Command", icon: "⌨️", component: AuraCommand, width: "750px", height: "500px" },
-  settings: { id: "settings", name: "Settings", icon: "⚙️", component: Settings, width: "650px", height: "500px" },
-};
-
-export default function App() {
-  const [systemState, setSystemState] = useState("booting"); // booting, running, emergency
-  const [openWindows, setOpenWindows] = useState([]);
-  const [activeWindowId, setActiveWindowId] = useState(null);
+import gameIcon from "./icons/game.svg";
+function App() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsMinimized, setSettingsMinimized] = useState(false);
   const [hubOpen, setHubOpen] = useState(false);
-  const [highestZ, setHighestZ] = useState(100);
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [explorerOpen, setExplorerOpen] = useState(false);
+  const [calcOpen, setCalcOpen] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [booting, setBooting] = useState(true);
+  const [sleeping, setSleeping] = useState(false);
+  const [emergencyMode, setEmergencyMode] = useState(false);
+  const [shutdown, setShutdown] = useState(false);
+  const [commandMinimized, setCommandMinimized] = useState(false);
+  const [notesMinimized, setNotesMinimized] = useState(false);
+  const [explorerMinimized, setExplorerMinimized] = useState(false);
+  const [calcMinimized, setCalcMinimized] = useState(false);
+  const [auraOpen, setAuraOpen] = useState(false);
+  const [auraMinimized, setAuraMinimized] = useState(false);
+  const [musicOpen, setMusicOpen] = useState(false);
+  const [musicMinimized, setMusicMinimized] = useState(false);
+  const [stellarOpen, setStellarOpen] = useState(false);
+  const [stellarMinimized, setStellarMinimized] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  const { playClick } = useSystemAudio() || { playClick: () => {} };
+  const showToast = useCallback((title, message) => {
+    const audio = new Audio(notificationSound);
+    audio.volume = 0.5;
+    audio.play().catch(() => {});
+    setToast({ title, message });
+  }, []);
 
-  // --- Window Management ---
-  const launchApp = useCallback((appId) => {
-    setHubOpen(false);
-    playClick();
+  /* ----- Desktop right-click context menu ----- */
+  const [contextMenu, setContextMenu] = useState({ open: false, x: 0, y: 0 });
+  const desktopRef = useRef(null);
+  const contextMenuRef = useRef(null);
+  const [contextMenuOffset, setContextMenuOffset] = useState({ x: 0, y: 0 });
 
-    if (openWindows.find(w => w.id === appId)) {
-      focusWindow(appId); // Already open, just focus it
+  /* Reposition menu near screen edges to avoid overflow (after layout) */
+  useLayoutEffect(() => {
+    if (!contextMenu.open || !contextMenuRef.current) {
+      setContextMenuOffset({ x: 0, y: 0 });
       return;
     }
 
@@ -179,3 +180,5 @@ export default function App() {
     </div>
   );
 }
+
+export default App;
