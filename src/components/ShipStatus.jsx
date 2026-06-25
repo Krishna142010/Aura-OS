@@ -2,162 +2,76 @@ import { useEffect, useState } from "react";
 
 export default function ShipStatus() {
   const [uptime, setUptime] = useState(0);
+  const [systems, setSystems] = useState({ eng: 65, shd: 82, com: 91 });
 
+  // Uptime Counter
   useEffect(() => {
-    const timer = setInterval(() => {
-      setUptime((u) => u + 1);
-    }, 1000);
-
+    const timer = setInterval(() => setUptime((u) => u + 1), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const hrs = String(Math.floor(uptime / 3600)).padStart(2, "0");
-  const mins = String(Math.floor((uptime % 3600) / 60)).padStart(2, "0");
-  const secs = String(uptime % 60).padStart(2, "0");
-  const [engines, setEngines] = useState(65);
-  const [shields, setShields] = useState(82);
-  const [comms, setComms] = useState(91);
+  // Live System Fluctuation Simulation
+  useEffect(() => {
+    const fluctuate = setInterval(() => {
+      setSystems({
+        eng: 60 + Math.floor(Math.random() * 30),
+        shd: 75 + Math.floor(Math.random() * 20),
+        com: 85 + Math.floor(Math.random() * 15)
+      });
+    }, 1500);
+    return () => clearInterval(fluctuate);
+  }, []);
 
-useEffect(() => {
-  const id = setInterval(() => {
-    setEngines(60 + Math.floor(Math.random() * 30));
-    setShields(75 + Math.floor(Math.random() * 20));
-    setComms(85 + Math.floor(Math.random() * 15));
-  }, 1200);
+  const formatTime = (totalSeconds) => {
+    const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+    const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+    const s = String(totalSeconds % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  };
 
-  return () => clearInterval(id);
-}, []);
   return (
     <div style={styles.widget}>
-      <div style={styles.header}>
-        SHIP STATUS
-      </div>
-      <div className="ship-systems">
-  <div className="system-row">
-    <span>ENG</span>
-    <div className="system-bar">
-      <div
-        className="system-fill"
-        style={{ width: `${engines}%` }}
-      />
-    </div>
-  </div>
-
-  <div className="system-row">
-    <span>SHD</span>
-    <div className="system-bar">
-      <div
-        className="system-fill"
-        style={{ width: `${shields}%` }}
-      />
-    </div>
-  </div>
-
-  <div className="system-row">
-    <span>COM</span>
-    <div className="system-bar">
-      <div
-        className="system-fill"
-        style={{ width: `${comms}%` }}
-      />
-    </div>
-  </div>
-</div>
-      <div style={styles.row}>
-        <span>Core Systems</span>
-        <span style={styles.online}>ONLINE</span>
-      </div>
-
-      <div style={styles.row}>
-        <span>Navigation</span>
-        <span style={styles.online}>ONLINE</span>
-      </div>
-
-      <div style={styles.row}>
-        <span>Communications</span>
-        <span style={styles.online}>ONLINE</span>
-      </div>
-
-      <div style={styles.row}>
-        <span>Aura AI</span>
-        <span style={styles.online}>ONLINE</span>
+      <div style={styles.header}>LIVE TELEMETRY</div>
+      
+      <div style={styles.systemContainer}>
+        <SystemBar label="ENG" value={systems.eng} color="#ef4444" />
+        <SystemBar label="SHD" value={systems.shd} color="#3b82f6" />
+        <SystemBar label="COM" value={systems.com} color="#10b981" />
       </div>
 
       <div style={styles.divider} />
 
-      <div style={styles.uptime}>
-        <div style={styles.label}>UPTIME</div>
-        <div style={styles.time}>
-          {hrs}:{mins}:{secs}
-        </div>
+      <div style={styles.uptimeContainer}>
+        <span style={styles.uptimeLabel}>SYS UPTIME</span>
+        <span style={styles.uptimeValue}>{formatTime(uptime)}</span>
       </div>
     </div>
   );
 }
 
+function SystemBar({ label, value, color }) {
+  return (
+    <div style={styles.row}>
+      <span style={styles.label}>{label}</span>
+      <div style={styles.barTrack}>
+        <div style={{ ...styles.barFill, width: `${value}%`, backgroundColor: color }} />
+      </div>
+      <span style={styles.valueText}>{value}%</span>
+    </div>
+  );
+}
+
 const styles = {
-  widget: {
-    position: "fixed",
-    right: 24,
-    bottom: 95,
-    width: 240,
-    padding: 16,
-
-    borderRadius: 18,
-
-    background:
-      "linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03))",
-
-    border:
-      "1px solid rgba(255,255,255,0.12)",
-
-    backdropFilter: "blur(24px)",
-    WebkitBackdropFilter: "blur(24px)",
-
-    color: "#E5E7EB",
-
-    zIndex: 2,
-  },
-
-  header: {
-    fontSize: 12,
-    letterSpacing: 2,
-    fontWeight: 700,
-    marginBottom: 14,
-    color: "#F59E0B",
-  },
-
-  row: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: 8,
-    fontSize: 13,
-  },
-
-  online: {
-    color: "#D6D6D6",
-    fontWeight: 600,
-  },
-
-  divider: {
-    height: 1,
-    margin: "12px 0",
-    background: "rgba(255,255,255,0.08)",
-  },
-
-  uptime: {
-    textAlign: "center",
-  },
-
-  label: {
-    fontSize: 11,
-    color: "#94A3B8",
-    letterSpacing: 1.5,
-  },
-
-  time: {
-    marginTop: 4,
-    fontSize: 22,
-    fontWeight: 700,
-  },
+  widget: { position: "fixed", right: "24px", top: "80px", width: "260px", padding: "20px", borderRadius: "16px", background: "rgba(15, 18, 25, 0.65)", backdropFilter: "blur(24px)", border: "1px solid rgba(255,255,255,0.08)", color: "#e8eef8", fontFamily: '"SF Mono", monospace', userSelect: "none", zIndex: 50 },
+  header: { fontSize: "11px", letterSpacing: "0.2em", fontWeight: "700", color: "#6366F1", marginBottom: "16px" },
+  systemContainer: { display: "flex", flexDirection: "column", gap: "12px" },
+  row: { display: "flex", alignItems: "center", gap: "12px" },
+  label: { fontSize: "11px", width: "24px", opacity: 0.7 },
+  barTrack: { flex: 1, height: "4px", background: "rgba(255,255,255,0.1)", borderRadius: "2px", overflow: "hidden" },
+  barFill: { height: "100%", transition: "width 0.5s ease" },
+  valueText: { fontSize: "11px", width: "30px", textAlign: "right" },
+  divider: { height: "1px", background: "rgba(255,255,255,0.08)", margin: "16px 0" },
+  uptimeContainer: { display: "flex", justifyContent: "space-between", alignItems: "center" },
+  uptimeLabel: { fontSize: "10px", opacity: 0.5, letterSpacing: "0.1em" },
+  uptimeValue: { fontSize: "12px", color: "#4ade80", textShadow: "0 0 8px rgba(74, 222, 128, 0.4)" }
 };

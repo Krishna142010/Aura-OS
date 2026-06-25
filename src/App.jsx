@@ -1,742 +1,181 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  useLayoutEffect,
-} from "react";
+import { useState, useEffect, useCallback } from "react";
 
-import "./App.css";
-
-import DesktopIcon from "./components/DesktopIcon";
-import Taskbar from "./components/Taskbar";
-import Window from "./components/Window";
-import StartMenu from "./components/StartMenu";
-import VideoBackground from "./components/VideoBackground";
+// --- System Components ---
 import BootScreen from "./components/BootScreen";
-import rocketIcon from "./icons/rocket.svg";
-import auraCommand from "./apps/auraCommand";
-import Notes from "./apps/Notes";
-import Explorer from "./apps/Explorer";
-import Calculator from "./apps/Calculator";
-import auraAI from "./apps/auraAI";
-import auraAIIcon from "./icons/aura-ai.svg";
-import notesIcon from "./icons/notes.svg";
-import folderIcon from "./icons/folder.svg";
-import calculatorIcon from "./icons/calculator.svg";
-import OrbitalWidget from "./components/OrbitalWidget";
-import AuraHub from "./components/AuraHub2";
-import Settings from "./apps/Settings";
-import auraLogo from "./icons/aura-logo.svg";
-import EmergencyScreen from "./components/EmergencyScreen";
-import settingsIcon from "./icons/settings.svg";
-import Toast from "./components/Toast";
-import notificationSound from "./assets/audio/notification.mp3";
-import AuraMusic from "./apps/AuraMusic";
-import musicIcon from "./icons/auramusic.svg";
-import ShipStatus from "./components/ShipStatus";
+import AnimatedBackground from "./components/AnimatedBackground";
 import CursorShip from "./components/CursorShip";
+import Taskbar from "./components/Taskbar";
+import AuraHub from "./components/AuraHub2";
+import Window from "./components/Windows";
+import ShipStatus from "./components/ShipStatus";
+import OrbitalWidget from "./components/OrbitalWidget";
 import AlienPet from "./components/AlienPet";
-import GettingStarted from "./components/GettingStarted";
+import EmergencyScreen from "./components/EmergencyScree"; // Note: adjusted to match your filename
+
+// --- Applications ---
+import Explorer from "./apps/Explorer";
+import Notes from "./apps/Notes";
+import Calculator from "./apps/Calculator";
+import AuraAI from "./apps/AuraAI";
+import AuraMusic from "./apps/AuraMusic";
 import StellarNavigation from "./apps/StellarNavigation";
-import gameIcon from "./icons/game.svg";
-function App() {
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [settingsMinimized, setSettingsMinimized] = useState(false);
+import AuraCommand from "./apps/AuraCommand";
+import Settings from "./apps/Settings";
+
+// --- Hooks & Utils ---
+import { useSystemAudio } from "./hooks/useSystemAudio"; // Ensure you created this hook earlier
+
+// --- App Registry ---
+const APP_REGISTRY = {
+  explorer: { id: "explorer", name: "File Explorer", icon: "📁", component: Explorer, width: "800px", height: "550px" },
+  notes: { id: "notes", name: "Notes", icon: "📝", component: Notes, width: "700px", height: "600px" },
+  calc: { id: "calc", name: "Calculator", icon: "🔢", component: Calculator, width: "320px", height: "450px" },
+  ai: { id: "ai", name: "Aura AI", icon: "🧠", component: AuraAI, width: "400px", height: "600px" },
+  music: { id: "music", name: "Media Player", icon: "🎵", component: AuraMusic, width: "350px", height: "500px" },
+  nav: { id: "nav", name: "Stellar Nav", icon: "🚀", component: StellarNavigation, width: "1000px", height: "700px" },
+  cmd: { id: "cmd", name: "Aura Command", icon: "⌨️", component: AuraCommand, width: "750px", height: "500px" },
+  settings: { id: "settings", name: "Settings", icon: "⚙️", component: Settings, width: "650px", height: "500px" },
+};
+
+export default function App() {
+  const [systemState, setSystemState] = useState("booting"); // booting, running, emergency
+  const [openWindows, setOpenWindows] = useState([]);
+  const [activeWindowId, setActiveWindowId] = useState(null);
   const [hubOpen, setHubOpen] = useState(false);
-  const [notesOpen, setNotesOpen] = useState(false);
-  const [explorerOpen, setExplorerOpen] = useState(false);
-  const [calcOpen, setCalcOpen] = useState(false);
-  const [commandOpen, setCommandOpen] = useState(false);
-  const [booting, setBooting] = useState(true);
-  const [sleeping, setSleeping] = useState(false);
-  const [emergencyMode, setEmergencyMode] = useState(false);
-  const [shutdown, setShutdown] = useState(false);
-  const [commandMinimized, setCommandMinimized] = useState(false);
-  const [notesMinimized, setNotesMinimized] = useState(false);
-  const [explorerMinimized, setExplorerMinimized] = useState(false);
-  const [calcMinimized, setCalcMinimized] = useState(false);
-  const [auraOpen, setAuraOpen] = useState(false);
-  const [auraMinimized, setAuraMinimized] = useState(false);
-  const [musicOpen, setMusicOpen] = useState(false);
-  const [musicMinimized, setMusicMinimized] = useState(false);
-  const [stellarOpen, setStellarOpen] = useState(false);
-  const [stellarMinimized, setStellarMinimized] = useState(false);
-  const [toast, setToast] = useState(null);
+  const [highestZ, setHighestZ] = useState(100);
 
-  const showToast = useCallback((title, message) => {
-    const audio = new Audio(notificationSound);
-    audio.volume = 0.5;
-    audio.play().catch(() => {});
-    setToast({ title, message });
-  }, []);
+  const { playClick } = useSystemAudio() || { playClick: () => {} };
 
-  /* ----- Desktop right-click context menu ----- */
-  const [contextMenu, setContextMenu] = useState({ open: false, x: 0, y: 0 });
-  const desktopRef = useRef(null);
-  const contextMenuRef = useRef(null);
-  const [contextMenuOffset, setContextMenuOffset] = useState({ x: 0, y: 0 });
+  // --- Window Management ---
+  const launchApp = useCallback((appId) => {
+    setHubOpen(false);
+    playClick();
 
-  /* Reposition menu near screen edges to avoid overflow (after layout) */
-  useLayoutEffect(() => {
-    if (!contextMenu.open || !contextMenuRef.current) {
-      setContextMenuOffset({ x: 0, y: 0 });
+    if (openWindows.find(w => w.id === appId)) {
+      focusWindow(appId); // Already open, just focus it
       return;
     }
-    const rect = contextMenuRef.current.getBoundingClientRect();
-    const vw = typeof window !== "undefined" ? window.innerWidth : 1920;
-    const vh = typeof window !== "undefined" ? window.innerHeight : 1080;
-    const margin = 8;
 
-    let offX = 0;
-    let offY = 0;
-    if (contextMenu.x + rect.width + margin > vw) {
-      offX = vw - rect.width - margin - contextMenu.x;
-    }
-    if (contextMenu.y + rect.height + margin > vh) {
-      offY = vh - rect.height - margin - contextMenu.y;
-    }
-    setContextMenuOffset({ x: offX, y: offY });
-  }, [contextMenu.open, contextMenu.x, contextMenu.y]);
+    const appDef = APP_REGISTRY[appId];
+    if (!appDef) return;
 
-  const closeContextMenu = useCallback(() => {
-    setContextMenu((prev) => (prev.open ? { ...prev, open: false } : prev));
-  }, []);
+    const newZ = highestZ + 1;
+    setHighestZ(newZ);
 
-  const handleRefresh = useCallback(() => {
-    showToast("Desktop", "Refreshed.");
-  }, [showToast]);
-
-  const handleNewFolder = useCallback(() => {
-    showToast("New Folder", "Folder created on desktop.");
-  }, [showToast]);
-
-  const handleNewNote = useCallback(() => {
-    setNotesOpen(true);
-    setNotesMinimized(false);
-  }, []);
-
-  const handleChangeWallpaper = useCallback(() => {
-    setSettingsOpen(true);
-    setSettingsMinimized(false);
-  }, []);
-
-  const handleOpenAuraAI = useCallback(() => {
-    setAuraOpen(true);
-    setAuraMinimized(false);
-  }, []);
-
-  const handleSystemInfo = useCallback(() => {
-    const ua = (typeof navigator !== "undefined" && navigator.userAgent) || "";
-    const tail = ua ? ua.split(" ").pop() : "unknown";
-    showToast("System Info", `AuraOS · ${tail}`);
-  }, [showToast]);
-
-  const handleRestart = useCallback(() => {
-    setBooting(true);
-    setTimeout(() => setBooting(false), 9000);
-  }, []);
-
-  const contextMenuItems = useMemo(
-    () => [
-      { label: "Refresh", action: handleRefresh },
-      { label: "New Folder", action: handleNewFolder },
-      { label: "New Note", action: handleNewNote },
-      { label: "Change Wallpaper", action: handleChangeWallpaper },
-      { label: "Open Aura AI", action: handleOpenAuraAI },
-      {
-        label: "Settings",
-        action: () => {
-          setSettingsOpen(true);
-          setSettingsMinimized(false);
-        },
-      },
-      { label: "System Info", action: handleSystemInfo },
-      { label: "Restart AuraOS", action: handleRestart },
-    ],
-    [
-      handleRefresh,
-      handleNewFolder,
-      handleNewNote,
-      handleChangeWallpaper,
-      handleOpenAuraAI,
-      handleSystemInfo,
-      handleRestart,
-    ]
-  );
-
-  const [wallpaper, setWallpaper] = useState(() => {
-    return localStorage.getItem("aura-wallpaper") || "default";
-  });
-
-  const [showWelcome, setShowWelcome] = useState(() => {
-    return localStorage.getItem("aura-onboarding-complete") !== "true";
-  });
-
-  const [startOpen] = useState(false);
-
-  const [pinnedApps] = useState(() => {
-    const savedPins = localStorage.getItem("auraPins");
-    return savedPins
-      ? JSON.parse(savedPins)
-      : [
-          { name: "Explorer", icon: folderIcon },
-          { name: "Aura AI", icon: AuraAIIcon },
-          { name: "Aura Command", icon: rocketIcon },
-        ];
-  });
-
-  const [zIndexes, setZIndexes] = useState({
-    notes: 20,
-    explorer: 21,
-    calc: 22,
-    command: 23,
-    stellar: 24,
-  });
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setBooting(false);
-    }, 9000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const seen = localStorage.getItem("aura-welcome-shown");
-    if (!seen) {
-      setTimeout(() => {
-        showToast(
-          "Welcome to AuraOS",
-          "Open Settings to customize wallpapers and system preferences."
-        );
-      }, 1500);
-      localStorage.setItem("aura-welcome-shown", "true");
-    }
-  }, [showToast]);
-
-  /* ----- Context menu: open on desktop right-click, suppress browser menu ----- */
-  useEffect(() => {
-    const onContextMenu = (e) => {
-      const target = e.target;
-      if (!(target instanceof Element)) return;
-      const desktopEl = desktopRef.current;
-      if (!desktopEl || !desktopEl.contains(target)) return;
-
-      // Always suppress the browser's native context menu while on the desktop
-      e.preventDefault();
-
-      // Only open the custom menu when right-clicking empty desktop surface
-      const isEmptySurface =
-        target.classList.contains("desktop") ||
-        target.classList.contains("video-background") ||
-        target.closest('[data-desktop-surface="true"]') === desktopEl ||
-        (target.hasAttribute &&
-          target.getAttribute("data-desktop-surface") === "true");
-
-      if (!isEmptySurface) return;
-
-      setContextMenu({ open: true, x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener("contextmenu", onContextMenu);
-    return () => window.removeEventListener("contextmenu", onContextMenu);
-  }, []);
-
-  /* ----- Context menu: close on outside click, escape, scroll, or blur ----- */
-  useEffect(() => {
-    if (!contextMenu.open) return;
-
-    const onPointerDown = (e) => {
-      const target = e.target;
-      if (
-        target instanceof Element &&
-        target.closest(".desktop-context-menu")
-      ) {
-        return;
-      }
-      closeContextMenu();
-    };
-
-    const onEscape = (e) => {
-      if (e.key === "Escape") closeContextMenu();
-    };
-
-    const onScroll = () => closeContextMenu();
-    const onBlur = () => closeContextMenu();
-
-    window.addEventListener("pointerdown", onPointerDown, true);
-    window.addEventListener("keydown", onEscape);
-    window.addEventListener("scroll", onScroll, true);
-    window.addEventListener("blur", onBlur);
-    return () => {
-      window.removeEventListener("pointerdown", onPointerDown, true);
-      window.removeEventListener("keydown", onEscape);
-      window.removeEventListener("scroll", onScroll, true);
-      window.removeEventListener("blur", onBlur);
-    };
-  }, [contextMenu.open, closeContextMenu]);
-
-  const bringToFront = (windowName) => {
-    const highest = Math.max(...Object.values(zIndexes));
-    setZIndexes((prev) => ({
+    setOpenWindows(prev => [
       ...prev,
-      [windowName]: highest + 1,
+      {
+        ...appDef,
+        zIndex: newZ,
+        isMinimized: false,
+        x: Math.random() * 100 + 100, // Slight random offset
+        y: Math.random() * 50 + 50
+      }
+    ]);
+    setActiveWindowId(appId);
+  }, [openWindows, highestZ, playClick]);
+
+  const closeWindow = useCallback((appId) => {
+    setOpenWindows(prev => prev.filter(w => w.id !== appId));
+    if (activeWindowId === appId) setActiveWindowId(null);
+  }, [activeWindowId]);
+
+  const focusWindow = useCallback((appId) => {
+    if (activeWindowId === appId) return;
+    const newZ = highestZ + 1;
+    setHighestZ(newZ);
+    
+    setOpenWindows(prev => prev.map(w => 
+      w.id === appId ? { ...w, zIndex: newZ, isMinimized: false } : w
+    ));
+    setActiveWindowId(appId);
+  }, [activeWindowId, highestZ]);
+
+  const toggleMinimize = useCallback((appId) => {
+    setOpenWindows(prev => prev.map(w => {
+      if (w.id === appId) {
+        const minimizing = !w.isMinimized;
+        if (minimizing && activeWindowId === appId) setActiveWindowId(null);
+        return { ...w, isMinimized: minimizing };
+      }
+      return w;
     }));
-  };
+  }, [activeWindowId]);
 
-  const taskbarApps = [
-    ...pinnedApps,
-    ...(notesOpen && !pinnedApps.some((app) => app.name === "Notes")
-      ? [{ name: "Notes", icon: notesIcon }]
-      : []),
-    ...(explorerOpen && !pinnedApps.some((app) => app.name === "Explorer")
-      ? [{ name: "Explorer", icon: folderIcon }]
-      : []),
-    ...(calcOpen && !pinnedApps.some((app) => app.name === "Calculator")
-      ? [{ name: "Calculator", icon: calculatorIcon }]
-      : []),
-    ...(auraOpen && !pinnedApps.some((app) => app.name === "Aura AI")
-      ? [{ name: "Aura AI", icon: auraAIIcon }]
-      : []),
-    ...(commandOpen && !pinnedApps.some((app) => app.name === "Aura Command")
-      ? [{ name: "Aura Command", icon: rocketIcon }]
-      : []),
-    ...(settingsOpen && !pinnedApps.some((app) => app.name === "Settings")
-      ? [{ name: "Settings", icon: settingsIcon }]
-      : []),
-    ...(musicOpen && !pinnedApps.some((app) => app.name === "Aura Music")
-      ? [{ name: "Aura Music", icon: musicIcon }]
-      : []),
-    ...(stellarOpen &&
-!pinnedApps.some((app) => app.name === "Stellar Navigation")
-  ? [{ name: "Stellar Navigation", icon: gameIcon }]
-  : []),
-  ];
-
-  if (booting) {
-    return <BootScreen />;
+  // --- Render Logic ---
+  if (systemState === "booting") {
+    return <BootScreen onComplete={() => setSystemState("running")} />;
   }
 
-  if (shutdown) {
-    return (
-      <div className="shutdown-screen">
-        <img src={auraLogo} alt="" width="120" />
-        <h1>AuraOS</h1>
-        <p>System Powered Off</p>
-      </div>
-    );
+  if (systemState === "emergency") {
+    return <EmergencyScreen exitEmergency={() => setSystemState("running")} />;
   }
 
-  if (sleeping) {
-    return (
-      <div className="sleep-screen" onClick={() => setSleeping(false)}>
-        <h1>Sleeping...</h1>
-        <p>Click anywhere to wake</p>
-      </div>
-    );
-  }
-
-  if (emergencyMode) {
-    return (
-      <EmergencyScreen
-        enterCommand={() => {
-          setEmergencyMode(false);
-          setCommandOpen(true);
-          setCommandMinimized(false);
-        }}
-        exitEmergency={() => setEmergencyMode(false)}
-      />
-    );
-  }
+  // Convert object to array for the Hub
+  const registeredAppsList = Object.values(APP_REGISTRY).map(app => ({
+    ...app,
+    action: () => launchApp(app.id)
+  }));
 
   return (
-    <div
-      ref={desktopRef}
-      className={`desktop ${emergencyMode ? "emergency-mode" : ""}`}
-      data-desktop-surface="true"
-    >
-      <VideoBackground wallpaperName={wallpaper} />
-
-      {showWelcome && (
-        <GettingStarted
-          onContinue={() => {
-            localStorage.setItem("aura-onboarding-complete", "true");
-            setShowWelcome(false);
-            showToast("Bridge Online", "Welcome to AuraOS.");
-          }}
-        />
-      )}
-
-      {emergencyMode && (
-        <div className="alert-banner">
-          ⚠ RED ALERT — EMERGENCY PROTOCOL ACTIVE
-        </div>
-      )}
-
-      <OrbitalWidget />
+    <div className="desktop-environment" style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+      {/* Background Layers */}
+      <AnimatedBackground />
       <CursorShip />
 
-      <DesktopIcon
-        icon={<img src={notesIcon} alt="" width="40" />}
-        label="Notes"
-        top="30px"
-        left="30px"
-        onDoubleClick={() => {
-          setNotesOpen(true);
-          setNotesMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-        icon={<img src={auraAIIcon} alt="" width="40" />}
-        label="Aura AI"
-        top="330px"
-        left="30px"
-        onDoubleClick={() => {
-          setAuraOpen(true);
-          setAuraMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-        icon={<img src={folderIcon} alt="" width="40" />}
-        label="Explorer"
-        top="130px"
-        left="30px"
-        onDoubleClick={() => {
-          setExplorerOpen(true);
-          setExplorerMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-        icon={<img src={calculatorIcon} alt="" width="40" />}
-        label="Calculator"
-        top="230px"
-        left="30px"
-        onDoubleClick={() => {
-          setCalcOpen(true);
-          setCalcMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-        icon={<img src={rocketIcon} alt="" width="40" />}
-        label="Aura Command"
-        top="430px"
-        left="30px"
-        onDoubleClick={() => {
-          setCommandOpen(true);
-          setCommandMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-        icon={<img src={settingsIcon} alt="" width="40" />}
-        label="Settings"
-        top="530px"
-        left="30px"
-        onDoubleClick={() => {
-          setSettingsOpen(true);
-          setSettingsMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-        icon={<img src={musicIcon} alt="" width="40" />}
-        label="Aura Music"
-        top="630px"
-        left="30px"
-        onDoubleClick={() => {
-          setMusicOpen(true);
-          setMusicMinimized(false);
-        }}
-      />
-
-      <DesktopIcon
-  icon={<img src={gameIcon} alt="" width="40" />}
-  label="Stellar Navigation"
-        top="30px"
-        left="130px"
-        onDoubleClick={() => {
-          setStellarOpen(true);
-          setStellarMinimized(false);
-        }}
-      />
-
-      {settingsOpen && !settingsMinimized && (
-        <Window
-          title="Settings"
-          top="140px"
-          left="220px"
-          width="900px"
-          height="600px"
-          zIndex={40}
-          onClose={() => setSettingsOpen(false)}
-          onMinimize={() => setSettingsMinimized(true)}
-        >
-          <Settings
-            wallpaper={wallpaper}
-            setWallpaper={setWallpaper}
-            showToast={showToast}
-          />
-        </Window>
-      )}
-
-      {notesOpen && !notesMinimized && (
-        <Window
-          title="Notes"
-          top="100px"
-          left="180px"
-          width="650px"
-          height="420px"
-          zIndex={zIndexes.notes}
-          onFocus={() => bringToFront("notes")}
-          onClose={() => setNotesOpen(false)}
-          onMinimize={() => setNotesMinimized(true)}
-        >
-          <Notes />
-        </Window>
-      )}
-
-      {explorerOpen && !explorerMinimized && (
-        <Window
-          title="Explorer"
-  top="80px"
-  left="150px"
-  width="1100px"
-  height="700px"
-          zIndex={zIndexes.explorer}
-          onFocus={() => bringToFront("explorer")}
-          onClose={() => setExplorerOpen(false)}
-          onMinimize={() => setExplorerMinimized(true)}
-        >
-          <Explorer />
-        </Window>
-      )}
-
-      {calcOpen && !calcMinimized && (
-        <Window
-          title="Calculator"
-          top="180px"
-          left="350px"
-          width="360px"
-          height="500px"
-          zIndex={zIndexes.calc}
-          onFocus={() => bringToFront("calc")}
-          onClose={() => setCalcOpen(false)}
-          onMinimize={() => setCalcMinimized(true)}
-        >
-          <Calculator />
-        </Window>
-      )}
-
-      {commandOpen && !commandMinimized && (
-        <Window
-          title="Aura COMMAND"
-          top="60px"
-          left="120px"
-          width="1000px"
-          height="650px"
-          zIndex={zIndexes.command}
-          onFocus={() => bringToFront("command")}
-          onClose={() => setCommandOpen(false)}
-          onMinimize={() => setCommandMinimized(true)}
-        >
-          <AuraCommand />
-        </Window>
-      )}
-
-      {stellarOpen && !stellarMinimized && (
-        <Window
-          title="Stellar Navigation"
-          top="30px"
-          left="80px"
-          width="1200px"
-          height="760px"
-          zIndex={zIndexes.stellar}
-          onFocus={() => bringToFront("stellar")}
-          onClose={() => setStellarOpen(false)}
-          onMinimize={() => setStellarMinimized(true)}
-        >
-          <StellarNavigation />
-        </Window>
-      )}
-
-      {startOpen && <StartMenu />}
-
-      <Taskbar
-        setHubOpen={setHubOpen}
-        hubOpen={hubOpen}
-        openApps={taskbarApps}
-        focusApp={(app) => {
-          if (app === "Notes") {
-            setNotesMinimized(false);
-            bringToFront("notes");
-          }
-          if (app === "Explorer") {
-            setExplorerMinimized(false);
-            bringToFront("explorer");
-          }
-          if (app === "Calculator") {
-            setCalcMinimized(false);
-            bringToFront("calc");
-          }
-          if (app === "Aura AI") {
-            setAuraMinimized(false);
-            setAuraOpen(true);
-          }
-          if (app === "Aura Command") {
-            setCommandMinimized(false);
-            setCommandOpen(true);
-            bringToFront("command");
-          }
-          if (app === "Settings") {
-            setSettingsMinimized(false);
-            setSettingsOpen(true);
-          }
-          if (app === "Aura Music") {
-            setMusicMinimized(false);
-            setMusicOpen(true);
-          }
-          if (app === "Stellar Navigation") {
-            setStellarMinimized(false);
-            setStellarOpen(true);
-            bringToFront("stellar");
-          }
-        }}
-      />
-
-      {auraOpen && !auraMinimized && (
-        <Window
-          title="Aura AI"
-          top="120px"
-          left="250px"
-          width="700px"
-          height="500px"
-          zIndex={30}
-          onClose={() => setAuraOpen(false)}
-          onMinimize={() => setAuraMinimized(true)}
-        >
-          <AuraAI />
-        </Window>
-      )}
-
-      {musicOpen && !musicMinimized && (
-        <Window
-          title="Aura Music"
-          top="100px"
-          left="300px"
-          width="700px"
-          height="650px"
-          zIndex={32}
-          onClose={() => setMusicOpen(false)}
-          onMinimize={() => setMusicMinimized(true)}
-        >
-          <AuraMusic />
-        </Window>
-      )}
-
-      {hubOpen && (
-        <AuraHub
-          onClose={() => setHubOpen(false)}
-          openSettings={() => {
-            setSettingsOpen(true);
-            setSettingsMinimized(false);
-            setHubOpen(false);
-          }}
-          openNotes={() => {
-            setNotesOpen(true);
-            setNotesMinimized(false);
-            setHubOpen(false);
-          }}
-          openExplorer={() => {
-            setExplorerOpen(true);
-            setExplorerMinimized(false);
-            setHubOpen(false);
-          }}
-          openCalculator={() => {
-            setCalcOpen(true);
-            setCalcMinimized(false);
-            setHubOpen(false);
-          }}
-          openAuraAI={() => {
-            setAuraOpen(true);
-            setAuraMinimized(false);
-            setHubOpen(false);
-          }}
-          openAuraCommand={() => {
-            setCommandOpen(true);
-            setCommandMinimized(false);
-            setHubOpen(false);
-          }}
-          onSleep={() => setSleeping(true)}
-          onRestart={() => {
-            setBooting(true);
-            setTimeout(() => setBooting(false), 9000);
-          }}
-          onShutdown={() => setShutdown(true)}
-          onEmergency={() => {
-            setEmergencyMode(true);
-            setHubOpen(false);
-          }}
-          openAuraMusic={() => {
-            setMusicOpen(true);
-            setMusicMinimized(false);
-            setHubOpen(false);
-          }}
-        />
-      )}
-
+      {/* Desktop Widgets */}
       <ShipStatus />
+      <OrbitalWidget />
+      <AlienPet />
 
-      <AlienPet
-        musicOpen={musicOpen}
-        auraOpen={auraOpen}
-        explorerOpen={explorerOpen}
-        settingsOpen={settingsOpen}
-      />
+      {/* Window Manager */}
+      {openWindows.map(app => {
+        if (app.isMinimized) return null;
+        const Component = app.component;
+        const isActive = activeWindowId === app.id;
 
-      {toast && (
-        <Toast
-          title={toast.title}
-          message={toast.message}
-          onClose={() => setToast(null)}
+        return (
+          <Window
+            key={app.id}
+            id={app.id}
+            title={app.name}
+            icon={app.icon}
+            defaultX={app.x}
+            defaultY={app.y}
+            width={app.width}
+            height={app.height}
+            zIndex={app.zIndex}
+            isActive={isActive}
+            onFocus={() => focusWindow(app.id)}
+            onClose={() => closeWindow(app.id)}
+            onMinimize={() => toggleMinimize(app.id)}
+          >
+            <Component />
+          </Window>
+        );
+      })}
+
+      {/* Central Hub Overlay */}
+      {hubOpen && (
+        <AuraHub 
+          apps={registeredAppsList} 
+          onClose={() => setHubOpen(false)}
+          onEmergency={() => setSystemState("emergency")}
         />
       )}
 
-      {/* Desktop right-click context menu */}
-      {contextMenu.open && (
-        <div
-          ref={contextMenuRef}
-          className="desktop-context-menu"
-          role="menu"
-          aria-label="Desktop context menu"
-          style={{
-            left: `${contextMenu.x + contextMenuOffset.x}px`,
-            top: `${contextMenu.y + contextMenuOffset.y}px`,
-          }}
-          onContextMenu={(e) => e.preventDefault()}
-        >
-          {contextMenuItems.map((item) => (
-            <button
-              key={item.label}
-              type="button"
-              role="menuitem"
-              className="desktop-context-menu-item"
-              onClick={() => {
-                closeContextMenu();
-                setTimeout(() => item.action(), 0);
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* Taskbar Dock */}
+      <Taskbar 
+        hubOpen={hubOpen}
+        setHubOpen={setHubOpen}
+        openApps={openWindows}
+        activeAppId={activeWindowId}
+        onAppClick={(id) => {
+          const app = openWindows.find(w => w.id === id);
+          if (app.isMinimized || activeWindowId !== id) focusWindow(id);
+          else toggleMinimize(id);
+        }}
+      />
     </div>
   );
 }
-
-export default App;
